@@ -27,5 +27,12 @@ namespace ADO_KN_P_211
             new IntroWindow().ShowDialog();
             this.Show();
         }
+
+        private void AuthButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            new AuthWindow().ShowDialog();
+            this.Show();
+        }
     }
 }

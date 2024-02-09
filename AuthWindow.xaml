@@ -1,0 +1,115 @@
+﻿<Window x:Class="ADO_KN_P_211.AuthWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ADO_KN_P_211"
+        mc:Ignorable="d"
+        Title="AuthWindow" Height="450" Width="800">
+    <Grid ShowGridLines="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="40"/>
+               
+            </Grid.RowDefinitions>
+            <Label
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Content="Автентифікація"/>
+            <Label
+                Grid.Row="1"
+                Content="Логін"/>
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                x:Name="LogLogin"/>
+            <Label
+                Grid.Row="2"
+                Content="Пароль"/>
+            <PasswordBox
+                Grid.Row="2"
+                Grid.Column="1"
+                x:Name="LogPassword"/>
+            <Button
+                Grid.Row="3"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Margin="20 5"
+                Padding="10 3"
+                x:Name="LoginButton"
+                Content="Вхід"/>
+        </Grid>
+
+
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Label
+                Grid.ColumnSpan="2"
+                HorizontalAlignment="Center"
+                Content="Реєстрація"/>
+            <Label
+                Grid.Row="1"
+                Content="Ім'я"/>
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                x:Name="RegName"/>
+            <Label
+                Grid.Row="2"
+                Content="Логін"/>
+            <TextBox
+                Grid.Row="2"
+                Grid.Column="1"
+                x:Name="RegLogin"/>
+            <Label
+                Grid.Row="3"
+                Content="Пароль"/>
+            <PasswordBox
+                Grid.Row="3"
+                Grid.Column="1"
+                x:Name="RegPassword"/>
+            <Label
+                Grid.Row="4"
+                Content="Повтор"/>
+            <PasswordBox
+                Grid.Row="4"
+                Grid.Column="1"
+                x:Name="RegRepeat"/>
+            <Button
+                Grid.Row="5"
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                Margin="20 5"
+                Padding="10 3"
+                x:Name="RegButton"
+                Content="Реєстрація"
+                Click="RegButton_Click"/>
+        </Grid>
+
+    </Grid>
+</Window>

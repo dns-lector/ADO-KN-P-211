@@ -6,7 +6,16 @@
         xmlns:local="clr-namespace:ADO_KN_P_211"
         mc:Ignorable="d"
         Title="IntroWindow" Height="450" Width="800">
-    <StackPanel Orientation="Vertical">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical" Grid.ColumnSpan="2">
         <Label 
             Content="Вступ. Підключення БД"
             HorizontalAlignment="Center"
@@ -34,5 +43,71 @@
                 x:Name="MyConnectionStatusLabel"
                 Content="Disconnected"/>
         </StackPanel>
+        <Label 
+            Content="Виконання запитів"
+            HorizontalAlignment="Center"
+            FontSize="20"
+            FontWeight="DemiBold"/>
+
+        <StackPanel Orientation="Horizontal">
+            <Label 
+                Content="MS SQL Server"/>
+            <Button 
+                x:Name="CreateMsButton"
+                Content="Create table"
+                Click="CreateMsButton_Click"/>
+            <Label 
+                x:Name="MsCreateStatusLabel"
+                Content="--"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label 
+                Content="MySQL / MariaDB"/>
+            <Button 
+                x:Name="CreateMyButton"
+                Content="Create table"
+                Click="CreateMyButton_Click"/>
+            <Label 
+                x:Name="MyCreateStatusLabel"
+                Content="--"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Name:"/>
+            <TextBox x:Name="UserNameTextBox" Width="100" />
+            <Label Content="Login:"/>
+            <TextBox x:Name="UserLoginTextBox"  Width="100"/>
+            <Label Content="Password:"/>
+            <PasswordBox x:Name="UserPasswordTextBox"  Width="100"/>
+            <Button 
+                x:Name="InsertMyButton"
+                Content="Add user (My)"
+                Margin="10 0"
+                Click="InsertMyButton_Click"/>
+            <Button 
+                x:Name="InsertMsButton"
+                Content="Add user (Ms)"
+                Margin="10 0"
+                Click="InsertMsButton_Click"/>  
+            <Label 
+                x:Name="InsertStatusLabel"
+                Content="--"/>
+        </StackPanel>
     </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
+            <Button
+                x:Name="SelectMsButton"
+                Content="Показати дані (MS SQL)"
+                Margin="20 0"
+                Click="SelectMsButton_Click"/>
+            <TextBlock x:Name="SelectMsTextBlock"/>
+        </StackPanel>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1">
+            <Button
+                x:Name="SelectMyButton"
+                Content="Показати дані (MySQL)"
+                Margin="20 0"
+                Click="SelectMyButton_Click"/>
+            <TextBlock x:Name="SelectMyTextBlock"/>
+        </StackPanel>
+    </Grid>
 </Window>
