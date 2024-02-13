@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADO_KN_P_211.DAL.DAO;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -55,31 +56,46 @@ namespace ADO_KN_P_211
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 return;
-            }
-            using var cmd = new SqlCommand(
-                $"INSERT INTO Users VALUES( NEWID(), @name, @login, '{App.md5(RegPassword.Password)}' )",
-                App.MsSqlConnection);
-            cmd.Parameters.Add(new SqlParameter("@name", System.Data.SqlDbType.VarChar, 64)
-            {
-                Value = RegName.Text
-            });
-            cmd.Parameters.Add(new SqlParameter("@login", System.Data.SqlDbType.VarChar, 64)
-            {
-                Value = RegLogin.Text
-            });
+            }            
             try
             {
-                cmd.Prepare();  // підготовка запиту - компіляція без параметрів
-                cmd.ExecuteNonQuery();  // виконання - передача даних у скомпільований запит
-                MessageBox.Show( "Insert OK");
+                if(UserDao.AddUser(new()
+                {
+                    Name = RegName.Text,
+                    Login = RegLogin.Text,
+                    PasswordHash = App.md5(RegPassword.Password),
+                    Birthdate = DateTime.Now,
+                }))
+                {
+                    MessageBox.Show("Insert OK");
+                }
+                else
+                {
+                    MessageBox.Show("Insert fails");
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+
         }
     }
 }
+/* ORM. DAO. DAL.
+ * Object Relation Mapping (ORM) - відображення (Mapping)
+ * даних та зв'язків між ними (Relation) на об'єкти. Іншими
+ * словами, створення об'єктів мови програмування які за 
+ * структурою максимально наближені до даних, що надходять до
+ * програми (БД, JSON, тощо). Такі об'єкти також відомі як
+ * DTO (data transfer object) або Entity.
+ * Робота з даними переводиться до роботи з об'єктами.
+ * Утворюються "перехідні" засоби - DAO (data access object)
+ * UserDao.CreateUser(UserDto user)
+ * List<UserDto> UserDao.GetAll()
+ * Сукупність DAO для різних даних утворює DAL (data access layer) -
+ * архітектурний шар проєкту, також відомий як контекст даних.
+ */
 /* Підключення різних ресурсів (вікон)
  * Підключення до БД - достатньо складний ресурс і відкривати
  * декілька підключень до одної БД - витрата ресурсів.
