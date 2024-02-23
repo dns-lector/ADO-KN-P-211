@@ -1,6 +1,8 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows;
 
@@ -11,6 +13,18 @@ namespace ADO_KN_P_211
     /// </summary>
     public partial class App : Application
     {
+        public static EfContext.EfContext EfDataContext { get; } = new();
+        public static Random Random { get; } = new();
+        
+        public static void LogError(
+            string message, 
+            [CallerMemberName] string callerName="undefined")
+        {
+            System.IO.File.AppendAllText(
+                "logs.txt",
+                $"{DateTime.Now.ToString(CultureInfo.InvariantCulture)} [{callerName}] {message}\n"
+            );
+        }
         private static SqlConnection? _msConnection;
         public static SqlConnection MsSqlConnection { 
             get

@@ -34,5 +34,20 @@ namespace ADO_KN_P_211
             new AuthWindow().ShowDialog();
             this.Show();
         }
+
+        private void CrudButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            new CrudWindow().ShowDialog();
+            this.Show();
+        }
+
+        private void EfButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            new EfWindow().ShowDialog();
+            this.Show();
+        }
+
     }
 }

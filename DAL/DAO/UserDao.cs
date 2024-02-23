@@ -13,10 +13,86 @@ namespace ADO_KN_P_211.DAL.DAO
 {
     internal class UserDao
     {
-        public static List<User> GetAll()
+        public static bool DeleteUser(User user, bool hardMode = false)
+        {
+            ArgumentNullException.ThrowIfNull(user);
+            if (user.Id == default)  // можна покращити і перевіряти наявність у БД
+            {
+                throw new ArgumentException(
+                    "Id field value must not be default",
+                    "user.Id");
+            }
+            using var cmd = new SqlCommand(null, App.MsSqlConnection);
+            if (hardMode)
+            {
+                cmd.CommandText = $"DELETE FROM Users WHERE Id='{user.Id}' ";
+            }
+            else
+            {
+                cmd.CommandText = $"UPDATE Users SET DeleteDt = CURRENT_TIMESTAMP, Name='', Birthdate=NULL WHERE Id='{user.Id}' ";
+            }
+            try
+            {
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                App.LogError(ex.Message);
+                return false;
+            }
+        }
+
+        public static bool UpdateUser(User user)
+        {
+            ArgumentNullException.ThrowIfNull(user);
+            if(user.Id == default)  // можна покращити і перевіряти наявність у БД
+            {
+                throw new ArgumentException(
+                    "Id field value must not be default",
+                    "user.Id");
+            }
+            using var cmd = new SqlCommand(
+                $"UPDATE Users SET Name=@name, Login=@login, PasswordHash=@passHash, Birthdate=@birthdate " +
+                $" WHERE Id=@id",
+                App.MsSqlConnection);
+            cmd.Parameters.Add(new SqlParameter("@name", System.Data.SqlDbType.VarChar, 64)
+            {
+                Value = user.Name
+            });
+            cmd.Parameters.Add(new SqlParameter("@login", System.Data.SqlDbType.VarChar, 64)
+            {
+                Value = user.Login
+            });
+            cmd.Parameters.Add(new SqlParameter("@passHash", System.Data.SqlDbType.Char, 32)
+            {
+                Value = user.PasswordHash
+            });
+            cmd.Parameters.Add(new SqlParameter("@birthdate", System.Data.SqlDbType.DateTime)
+            {
+                Value = (object?) user.Birthdate ?? DBNull.Value
+            });
+            cmd.Parameters.Add(new SqlParameter("@id", System.Data.SqlDbType.UniqueIdentifier)
+            {
+                Value = user.Id
+            });
+            try
+            {
+                cmd.Prepare();
+                cmd.ExecuteNonQuery(); 
+                return true;
+            }
+            catch (Exception ex)
+            {
+                App.LogError(ex.Message);
+                return false;
+            }
+        }
+
+        public static List<User> GetAll(bool showDeleted = false)
         {
             using SqlCommand cmd = new(
-                "SELECT * FROM Users", 
+                "SELECT * FROM Users " + (showDeleted ? "" : " WHERE DeleteDt IS NULL"), 
                 App.MsSqlConnection);
             try
             {
@@ -30,6 +106,7 @@ namespace ADO_KN_P_211.DAL.DAO
             }
             catch (Exception ex)
             {
+                App.LogError(ex.Message);
                 return null!;
             }
         }
@@ -66,6 +143,7 @@ namespace ADO_KN_P_211.DAL.DAO
             }
             catch (Exception ex)
             {
+                App.LogError(ex.Message);
                 return false;
             }
         }
@@ -104,8 +182,14 @@ namespace ADO_KN_P_211.DAL.DAO
             }
             catch (Exception ex)
             {
+                App.LogError(ex.Message);
                 return null;
             }
         }
     }
 }
+/* Д.З. Реалізувати зміну паролю із внесенням до БД
+ * ** Реорганізувати код проєкту таким чином, щоб
+ * після змін (Update) даних користувача вони відображались
+ * у переліку користувачів.
+ */
