@@ -14,5 +14,9 @@ namespace ADO_KN_P_211.EfContext
         public Guid ManagerId { get; set; }
         public DateTime SaleDt { get; set; }
         public DateTime? DeleteDt { get; set; }
+
+        ///// NAVIGATION PROPERTIES /////////
+        public Manager Manager { get; set; }
+        public Product Product { get; set; }
     }
 }

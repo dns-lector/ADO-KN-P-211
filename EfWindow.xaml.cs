@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ADO_KN_P_211.EfContext;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using static Org.BouncyCastle.Asn1.Cmp.Challenge;
 
 namespace ADO_KN_P_211
 {
@@ -37,6 +37,7 @@ namespace ADO_KN_P_211
         {
             DisplayStatistics();
         }
+
         private void DisplayStatistics()
         {
             ManagersCountLabel.Content = App.EfDataContext.Managers.Count();
@@ -97,8 +98,8 @@ namespace ADO_KN_P_211
 
         private void SalesButton_Click(object sender, RoutedEventArgs e)
         {
-            AddSales().ContinueWith((_) => DisplayStatistics());
             SalesCountLabel.Content = "Updating...";
+            Task.Run(AddSales);
         }
 
         private async Task AddSales()
@@ -122,16 +123,122 @@ namespace ADO_KN_P_211
             // відразу не відображаються у БД. Необхідно подавати команду оновлення
             // Але не обов'язково зберігати після кожної зміни, можна накопичити
             await App.EfDataContext.SaveChangesAsync();
+            this.Dispatcher.Invoke(DisplayStatistics);  // runOnUiThread()
+        }
+
+        private void ProductSalesButton_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime date = new(2023, 02, 23);
+            /* Вивести статистику продажів по товарах за "сьогодні" - 
+             за день, як сьогодні, тільки за звітний рік БД (2023) */
+            var query = App.EfDataContext.Products         // FROM  Products P
+                .GroupJoin(                                // 
+                    App.EfDataContext.Sales,               // LEFT JOIN Sales S 
+                    p => p.Id,                             // ON P.Id = 
+                    s => s.ProductId,                      //    S.ProductId
+                    (product, sales) => new                // GROUP BY P
+                    {                                      // 
+                        Name = product.Name,               // 
+                        Pcs = sales.Where(s => s.SaleDt.Date == date).Sum(s => s.Quantity)   // 
+                    }                                      // 
+                );                                         // 
+            foreach ( var item in query )
+            {
+                ResultLabel.Content += $"{item.Name} {item.Pcs} \n";
+            }
+        }
+
+        private void NavButton1_Click(object sender, RoutedEventArgs e)
+        {
+            ResultLabel.Content = "";
+            foreach(var str in 
+                App.EfDataContext
+                    .Managers
+                    .Include(m => m.MainDepartment)
+                    .Select(m => $"{m.Surname} {m.MainDepartment.Name}")
+                    .Take(5))
+            {
+                ResultLabel.Content += $"{str}\n";
+            }
+            ResultLabel.Content += "\n";
+            foreach (var str in
+                App.EfDataContext
+                    .Departments
+                    .Include(d => d.MainWorkers)
+                    .Select(d => $"{d.Name} {d.MainWorkers.Count}"))
+            {
+                ResultLabel.Content += $"{str}\n";
+            }
+
+        }
+
+        private void NavButton2_Click(object sender, RoutedEventArgs e)
+        {
+            ResultLabel.Content = "";
+            foreach (var str in
+                App.EfDataContext
+                    .Managers
+                    .Include(m => m.SecondaryDepartment)
+                    .Select(m => $"{m.Surname} {(m.SecondaryDepartment == null ? "--" : m.SecondaryDepartment.Name)}")
+                    /*.Take(5)*/)
+            {
+                ResultLabel.Content += $"{str}\n";
+            }
+            /* Д.З. "Навігаційні властивості"
+             * Запит на "відділ за сумісництвом" - додати нумерацію рядків результату
+             *  (бажано у складі запиту)
+             * Додати виведення інверсної навігаційної властивості - кількості
+             *  працівників за сумісництвом, що працюють у відділах
+             *  
+             * * Скласти SQL запити, аналогічні EF-запитам
+             */
+        }
+
+        private void ChiefButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResultLabel.Content = "";
+            foreach (Manager man in 
+                App.EfDataContext
+                    .Managers
+                    .Include(m => m.Chief))
+            {
+                ResultLabel.Content += $"{man.Surname} -- {man.Chief?.Surname ?? "no chief"}\n";
+            }
+        }
+
+        private void SubordinatesButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResultLabel.Content = "";
+            foreach (Manager man in
+                App.EfDataContext
+                    .Managers
+                    .Include(m => m.Subordinates))
+            {
+                String subs = String.Join(", ", man.Subordinates.Select(m => m.Surname));
+                ResultLabel.Content += $"{man.Surname} -- {subs}\n";
+            }
+        }
+
+        private void SalesProdButton_Click(object sender, RoutedEventArgs e)
+        {
+            DateTime date = new(2023, 02, 28);
+            ResultLabel.Content = "";
+            foreach (Product p in
+                App.EfDataContext
+                    .Products
+                    .Include(p => p.Sales))
+            {
+                int checksToday = p.Sales.Where(s => s.SaleDt.Date == date).Count();
+                ResultLabel.Content += $"{p.Name} -- {checksToday}\n";
+            }
         }
     }
 }
 /* Д.З. Скласти EF(LINQ) запити на одержання наступних даних:
- * - самий молодий менеджер
- * - товар з найкоротшою назвою
- * - випадковий товар (за натиском кнопки дані оновлюються)
- * - випадковий менеджер
- * Також додати інформацію (вивести) про випадкову дату (у межах 2023 року)
- *  та час у межах 9:00 до 20:00
+ * - статистику продажів по товарах за "сьогодні" 
+ *    Назва товару -- кількість чеків, шт -- кількість товарів, шт. -- обіг, грн.
+ *    
+ * Тренуватись у налаштуванні зв'язків через контекст даних
  */
 /* Entity Framework Core - ORM-інструментарій для спрощення роботи з
  * даними, орієнтований на бази даних.
@@ -175,3 +282,32 @@ namespace ADO_KN_P_211
  * Select or enter DB name: (вибрати з переліку) ado211ef
  * [Server explorer] -> ...ado211ef
  */
+/* Навігаційні властивості
+ * Це властивості (get;set;), які забезпечують зв'язки між сутностями
+ * Ідея:
+ * - до сутностей (Entities) додаються окрім полів даних властивості, що
+ * за типом є Entities або їх колекціями.
+ * - звернення до таких властивостей призводить до витягу Entities,
+ * пов'язаних з даною
+ * - у той же час, на структуру контексту (БД) наявність таких властивостей
+ * не чинить впливу
+ * На прикладі відношення Департамент-Менеджер (в одному департаменті
+ * працюють декілька менеджерів): [див. класи Manager, Department]
+ * - у класі Manager створюємо властивість
+ *    public Department MainDepartment { get; set; }
+ * - у класі Department створюємо колекцію
+ *    public List<Manager> MainWorkers { get; set; }
+ * - налаштовуємо відношення у контексті (EfContext) OnModelCreating
+ *          modelBuilder.Entity<Manager>()
+                .HasOne(m => m.MainDepartment)
+                .WithMany(d => d.MainWorkers)
+                .HasForeignKey(m => m.IdMainDep)
+                .HasPrincipalKey(d => d.Id);
+ * - при зверненні до сутностей, що мають навігаційні властивості,
+ *    треба зазначати які з них слід заповнювати інструкціями .Include
+ *      .Managers
+        .Include(m => m.MainDepartment)
+ *    інколи контекст налаштований на автоматичне включення навігаційних
+ *    властивостей, але тоді його бажано відключити (може потягнути
+ *    за собою проблеми серіалізації, наприклад, до JSON)
+*/

@@ -16,5 +16,14 @@ namespace ADO_KN_P_211.EfContext
         public Guid? IdSecDep { get; set; }
         public Guid? IdChief { get; set; }
         public DateTime? DeleteDt { get; set; }
+
+        ///// NAVIGATION PROPERTIES /////////
+        public Department MainDepartment { get; set; }
+        public Department? SecondaryDepartment { get; set; }
+
+        public Manager? Chief { get; set; }
+        public IEnumerable<Manager> Subordinates { get; set; }
+
+        public IEnumerable<Sale> Sales { get; set; }
     }
 }

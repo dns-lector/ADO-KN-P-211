@@ -13,5 +13,9 @@ namespace ADO_KN_P_211.EfContext
         public DateTime? DeleteDt { get; set; }
 
         public String? InternationalName { get; set; }
+
+        ///// NAVIGATION PROPERTIES /////////
+        public List<Manager> MainWorkers { get; set; }
+        public IEnumerable<Manager> SecondaryWorkers { get; set; }
     }
 }

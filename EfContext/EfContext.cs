@@ -32,6 +32,32 @@ namespace ADO_KN_P_211.EfContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Manager>()        // Налаштування навігаційних властивостей
+                .HasOne(m => m.MainDepartment)    // один-до... - зазначаємо саме навігаційну
+                .WithMany(d => d.MainWorkers)     // ...багатьох - також навігаційна колекція
+                .HasForeignKey(m => m.IdMainDep)  // зовнішній ключ - у Manager
+                .HasPrincipalKey(d => d.Id);      // первинний ключ - у Department
+
+            modelBuilder.Entity<Manager>()           // Правила за замовчанням
+                .HasOne(m => m.SecondaryDepartment)  // Id
+                .WithMany(d => d.SecondaryWorkers)   // [Table]Id
+                .HasForeignKey(m => m.IdSecDep);     // не додаємо HasPrincipalKey
+                                                     // оскільки Id - за замовч.
+
+            modelBuilder.Entity<Manager>()
+                .HasOne(m => m.Chief)
+                .WithMany(c => c.Subordinates)
+                .HasForeignKey(m => m.IdChief)
+                .HasPrincipalKey(c => c.Id);
+
+
+            modelBuilder.Entity<Sale>()   // Оскільки в Sales поле ManagerId
+                .HasOne(s => s.Manager)   // відповідає правилам замовчання
+                .WithMany(m => m.Sales);  // HasForeignKey можна не зазначати
+            modelBuilder.Entity<Sale>()
+                .HasOne(s => s.Product)
+                .WithMany(p => p.Sales);
+
             SeedDepartments(modelBuilder);
             SeedProducts(modelBuilder);
             SeedManagers(modelBuilder);

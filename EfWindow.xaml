@@ -12,18 +12,32 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal">
             <Label Content="Managers:"/>
             <Label Content="--" x:Name="ManagersCountLabel"/>
             <Label Content="Sales:"/>
             <Label Content="--" x:Name="SalesCountLabel"/>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
+        <UniformGrid Grid.Row="1" Columns="6">
             <Button Content="SELECT" x:Name="SelectButton"
                     Click="SelectButton_Click"/>
             <Button x:Name="CheapButton" Content="Cheap" Click="CheapButton_Click"/>
             <Button x:Name="SalesButton" Content="+Sales" Click="SalesButton_Click"/>
+            <Button x:Name="ProductSalesButton" Content="Products" Click="ProductSalesButton_Click"/>
+            <Button x:Name="NavButton1" Content="Nav 1" Click="NavButton1_Click"/>
+            <Button x:Name="NavButton2" Content="Nav 2" Click="NavButton2_Click"/>
+
+            <Button x:Name="ChiefButton" Content="Chief" Click="ChiefButton_Click"/>
+            <Button x:Name="SubordinatesButton" Content="Subs" Click="SubordinatesButton_Click"/>
+            <Button x:Name="SalesProdButton" Content="Prods" Click="SalesProdButton_Click"/>
+        </UniformGrid>
+
+        <ScrollViewer Grid.Column="1" Grid.RowSpan="2">
             <Label x:Name="ResultLabel"/>
-        </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>
